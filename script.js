@@ -70,10 +70,11 @@ function init() {
     showScene("mission-accepted");
     state.unlockedFiles = ["mission-file-01", "mission-file-02", "mission-file-03", "mission-file-04", "classified-surprise"];
     saveState();
-  } else {
-    showScene("secure-connection");
-    startSecureConnection();
+    return;
   }
+
+  showScene("secure-connection");
+  startSecureConnection();
 }
 
 function bindEvents() {

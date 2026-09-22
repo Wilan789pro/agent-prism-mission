@@ -592,31 +592,6 @@ button {
   margin-top: 0.25rem;
 }
 
-.mission-placeholder,
-.archive-placeholder,
-.final-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 7rem;
-  border: 1px solid rgba(227, 140, 125, 0.35);
-  border-radius: 12px;
-  background: rgba(227, 140, 125, 0.05);
-  color: rgba(255, 255, 255, 0.74);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.62rem;
-  text-align: center;
-}
-
-.mission-placeholder {
-  min-height: 9rem;
-}
-
-.final-placeholder {
-  min-height: 13rem;
-}
 
 .redacted-card {
   background: linear-gradient(180deg, rgba(17, 17, 17, 0.96), rgba(12, 12, 12, 0.98));
