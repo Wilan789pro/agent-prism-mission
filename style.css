@@ -400,13 +400,18 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
-  padding-top: 1.6rem;
+  padding-top: 2.5rem;
+  padding-bottom: 5rem;
   min-height: 14rem;
 }
 
 .decision-message {
-  position: relative;
+  position: absolute;
+  top: 0.55rem;
+  left: 50%;
+  transform: translateX(-50%);
   min-height: 1.4rem;
+  width: min(92%, 28rem);
   color: var(--red);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -414,6 +419,7 @@ button {
   opacity: 0;
   transition: opacity 0.25s ease;
   text-align: center;
+  z-index: 5;
 }
 
 .decision-message.visible {

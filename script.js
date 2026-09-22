@@ -169,8 +169,8 @@ function showSecureMessage() {
 
   setTimeout(() => {
     elements.secureMessage.innerHTML = `
-      <div class="message-top">TOP SECRET</div>
-      <div class="message-sub">CONFIDENTIAL</div>
+      <div class="message-top">IDENTIFICATION SUCCESSFUL</div>
+      <div class="message-sub">WELCOME, AGENT PRISM.</div>
       <div class="message-heading">MISSION BRIEFING</div>
     `;
     elements.enterButton.classList.remove("hidden");
@@ -288,10 +288,6 @@ function acceptMission() {
   vibrate(50);
 
   showScene("mission-accepted");
-
-  setTimeout(() => {
-    showScene("mission-file-01");
-  }, 1800);
 }
 
 function unlockFile(fileId) {
