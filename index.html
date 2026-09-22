@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>Agent Prism Mission Briefing</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <button id="soundToggle" class="sound-toggle" type="button" aria-label="Toggle sound">
+        🔊 SOUND: ON
+      </button>
+
+      <button id="resetButton" class="reset-button sr-only" type="button" aria-label="Reset mission state">
+        Reset Mission
+      </button>
+
+      <main class="scene-stage" aria-live="polite">
+        <section id="secure-connection" class="scene active" aria-label="Secure connection scene">
+          <div class="terminal-panel">
+            <div class="terminal-header">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot amber"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+
+            <div class="terminal-body">
+              <div id="terminalStatus" class="terminal-status">INITIALISING SECURE CONNECTION...</div>
+              <div class="progress-bar-wrap">
+                <div id="progressBar" class="progress-bar"></div>
+              </div>
+              <div id="terminalMeta" class="terminal-meta">ESTABLISHING ENCRYPTED CHANNEL...</div>
+            </div>
+          </div>
+
+          <div id="secureMessage" class="secure-message">
+            <div class="message-top">TOP SECRET</div>
+            <div class="message-sub">CONFIDENTIAL</div>
+            <div class="message-heading">MISSION BRIEFING</div>
+          </div>
+
+          <button id="enterButton" class="primary-button hidden" type="button">[ TAP TO ENTER ]</button>
+        </section>
+
+        <section id="briefing" class="scene" aria-label="Classified dossier scene">
+          <div class="dossier-shell">
+            <div class="dossier-header">
+              <div>
+                <p class="stamp top-secret">TOP SECRET</p>
+                <p class="stamp conf">CONFIDENTIAL MISSION BRIEFING</p>
+              </div>
+              <div class="stamp-block">CLASSIFIED</div>
+            </div>
+
+            <div class="briefing-grid">
+              <article class="agent-card agent-lama">
+                <div class="photo-frame photo-frame-small">
+                  <div class="photo-placeholder">
+                    <span>AGENT<br />LAMA</span>
+                  </div>
+                </div>
+                <div class="card-copy">
+                  <p class="muted-label">MISSION HANDLER</p>
+                  <h3>LAMA</h3>
+                  <p class="status-line">STATUS: ACTIVE</p>
+                </div>
+              </article>
+
+              <article class="agent-card agent-prism">
+                <div class="photo-frame photo-frame-small">
+                  <div class="photo-placeholder">
+                    <span>AGENT<br />PRISM</span>
+                  </div>
+                </div>
+                <div class="card-copy">
+                  <p class="muted-label">FIELD AGENT</p>
+                  <h3>PRISM</h3>
+                  <p class="status-line">STATUS: SELECTED</p>
+                </div>
+              </article>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-row">
+                <span class="field-label">AGENT</span>
+                <span class="field-value">PRISM</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">MISSION HANDLER</span>
+                <span class="field-value">LAMA</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">MISSION ID</span>
+                <span class="field-value">03-10-26</span>
+              </div>
+              <div class="field-row">
+                <span class="field-label">STATUS</span>
+                <span class="field-value accent">AWAITING ACCEPTANCE</span>
+              </div>
+            </div>
+
+            <div class="briefing-copy">
+              <p>Agent Prism, this is Agent Lama</p>
+              <p>I have a mission for you</p>
+              <p>You have been selected for a highly classified operation scheduled for Saturday, October 3rd, 2026</p>
+              <p>Do you accept the mission</p>
+            </div>
+
+            <div id="decisionPanel" class="decision-panel">
+              <div id="decisionMessage" class="decision-message" aria-live="polite">TARGET LOST</div>
+              <button id="yesButton" class="decision-button yes-button" type="button">[ ACCEPT MISSION ]</button>
+              <button id="noButton" class="decision-button no-button" type="button">[ DECLINE ]</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="mission-accepted" class="scene" aria-label="Mission accepted scene">
+          <div class="access-panel">
+            <p class="status-tag">ACCESS GRANTED</p>
+            <h2 class="access-title">CLEARANCE LEVEL:<br />AUTHORIZED</h2>
+            <p class="welcome-line">WELCOME, AGENT PRISM.</p>
+            <p class="access-copy">Agent Lama has authorised partial access to the mission file.</p>
+            <button class="primary-button next-scene" data-next="mission-file-01" type="button">OPEN FILE</button>
+          </div>
+        </section>
+
+        <section id="mission-file-01" class="scene file-scene" aria-label="Mission file 01 extract">
+          <div class="file-card">
+            <div class="file-header">
+              <span class="file-tag">MISSION FILE 01</span>
+              <span class="file-badge">EXTRACT</span>
+            </div>
+            <h3>OPERATION:<span>EXTRACTION</span></h3>
+            <div class="file-grid">
+              <div><span>DATE</span><strong>03/10/2026</strong></div>
+              <div><span>TIME</span><strong>08:30 AM</strong></div>
+              <div><span>LOCATION</span><strong>AGENT PRISM'S RESIDENCE</strong></div>
+              <div><span>TRANSPORT</span><strong>AGENT LAMA</strong></div>
+            </div>
+            <p>Agent Lama will arrive at your residence at <strong>08:30 AM</strong></p>
+            <p>Be ready</p>
+            <button class="primary-button next-scene" data-next="mission-file-02" type="button">NEXT FILE</button>
+          </div>
+        </section>
+
+        <section id="mission-file-02" class="scene file-scene" aria-label="Mission file 02 dress code">
+          <div class="file-card">
+            <div class="file-header">
+              <span class="file-tag">MISSION FILE 02</span>
+              <span class="file-badge">DRESS CODE</span>
+            </div>
+            <h3>DRESS CODE<span>SMART CASUAL</span></h3>
+            <div class="file-grid">
+              <div><span>FOOTWEAR</span><strong>COMFORTABLE</strong></div>
+            </div>
+            <p>Comfortable shoes are recommended</p>
+            <p>You will understand later</p>
+            <button class="primary-button next-scene" data-next="mission-file-03" type="button">NEXT FILE</button>
+          </div>
+        </section>
+
+        <section id="mission-file-03" class="scene file-scene" aria-label="Mission file 03 primary objective">
+          <div class="file-card">
+            <div class="file-header">
+              <span class="file-tag">MISSION FILE 03</span>
+              <span class="file-badge">PRIMARY OBJECTIVE</span>
+            </div>
+            <h3>DESTINATION:<span>DEVELOPERS FESTIVAL</span></h3>
+            <div class="objective-list">
+              <p>✓ Attend the event</p>
+              <p>✓ Spend the morning together</p>
+              <p>✓ Have fun</p>
+            </div>
+            <div class="photo-card photo-mission">
+              <div class="photo-frame photo-frame-tilt">
+                <div class="photo-placeholder">
+                  <span>MISSION<br />PHOTO</span>
+                </div>
+              </div>
+            </div>
+            <p class="tiny-line">THREAT LEVEL: EXTREMELY NERDY.</p>
+            <button class="primary-button next-scene" data-next="mission-file-04" type="button">NEXT FILE</button>
+          </div>
+        </section>
+
+        <section id="mission-file-04" class="scene file-scene" aria-label="Mission file 04 lunch checkpoint">
+          <div class="file-card">
+            <div class="file-header">
+              <span class="file-tag">MISSION FILE 04</span>
+              <span class="file-badge">CHECKPOINT</span>
+            </div>
+            <h3>LUNCH<span>REFUELLING CHECKPOINT</span></h3>
+            <p>Every successful operation requires a refuelling checkpoint.</p>
+            <p>Lunch details will be revealed during the mission.</p>
+            <button class="primary-button next-scene" data-next="classified-surprise" type="button">NEXT FILE</button>
+          </div>
+        </section>
+
+        <section id="classified-surprise" class="scene file-scene" aria-label="Classified surprise scene">
+          <div class="file-card redacted-card">
+            <div class="file-header">
+              <span class="file-tag">MISSION FILE 05</span>
+              <span class="file-badge">NEXT PHASE</span>
+            </div>
+            <h3>DESTINATION:<span>████████████</span></h3>
+            <div class="redacted-grid">
+              <div><span>ACTIVITY</span><strong>████████████</strong></div>
+              <div><span>LOCATION</span><strong>████████████</strong></div>
+              <div><span>STATUS</span><strong>CLASSIFIED</strong></div>
+              <div><span>AUTHORIZED BY</span><strong>AGENT LAMA</strong></div>
+              <div><span>ACCESS LEVEL</span><strong>INSUFFICIENT</strong></div>
+            </div>
+            <div class="redaction-block">
+              <p>CLEARANCE REQUIRED</p>
+              <p>████████████</p>
+            </div>
+            <p>You will receive clearance when the time is right.</p>
+            <button class="primary-button next-scene" data-next="mission-timeline" type="button">OPEN TIMELINE</button>
+          </div>
+        </section>
+
+        <section id="mission-timeline" class="scene" aria-label="Mission timeline scene">
+          <div class="timeline-shell">
+            <p class="timeline-heading">MISSION TIMELINE</p>
+            <div class="timeline-list">
+              <button class="timeline-item" data-target="mission-file-01" type="button">
+                <span>08:30 AM</span>
+                <small>EXTRACTION</small>
+              </button>
+              <div class="timeline-connector">↓</div>
+              <button class="timeline-item" data-target="mission-file-03" type="button">
+                <span>MORNING</span>
+                <small>DEVELOPERS FESTIVAL</small>
+              </button>
+              <div class="timeline-connector">↓</div>
+              <button class="timeline-item" data-target="mission-file-04" type="button">
+                <span>LUNCH</span>
+                <small>CHECKPOINT</small>
+              </button>
+              <div class="timeline-connector">↓</div>
+              <button class="timeline-item" data-target="classified-surprise" type="button">
+                <span>████████</span>
+                <small>CLASSIFIED</small>
+              </button>
+            </div>
+
+            <div class="archive-grid">
+              <article class="archive-card">
+                <div class="photo-frame photo-frame-small">
+                  <div class="photo-placeholder"><span>ARCHIVE<br />001</span></div>
+                </div>
+              </article>
+              <article class="archive-card">
+                <div class="photo-frame photo-frame-small">
+                  <div class="photo-placeholder"><span>ARCHIVE<br />002</span></div>
+                </div>
+              </article>
+              <article class="archive-card">
+                <div class="photo-frame photo-frame-small">
+                  <div class="photo-placeholder"><span>ARCHIVE<br />003</span></div>
+                </div>
+              </article>
+            </div>
+
+            <button class="primary-button next-scene" data-next="final-transmission" type="button">FINAL TRANSMISSION</button>
+          </div>
+        </section>
+
+        <section id="final-transmission" class="scene" aria-label="Final transmission scene">
+          <div class="final-shell">
+            <p class="final-heading">FINAL TRANSMISSION</p>
+            <div class="final-card">
+              <div class="final-person">
+                <span class="tiny-kicker">AGENT PRISM</span>
+                <h2>YOUR MISSION HAS BEEN ACCEPTED.</h2>
+                <div class="final-meta">
+                  <span>03.10.2026</span>
+                  <span>08:30 AM</span>
+                </div>
+                <p>AGENT LAMA WILL BE WAITING.</p>
+              </div>
+
+              <div class="final-message-block">
+                <p>Come prepared.</p>
+                <p>Trust the handler.</p>
+                <p>And most importantly...</p>
+                <p class="romantic-line">Have fun. ❤️</p>
+                <p class="signature">— Agent Lama</p>
+              </div>
+
+              <div class="final-photo-wrap">
+                <div class="photo-frame photo-frame-final">
+                  <div class="photo-placeholder">
+                    <span>OUR<br />PHOTO</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="final-status">
+                <span>MISSION STATUS:</span>
+                <strong>ACTIVE</strong>
+              </div>
+
+              <div class="self-destruct-holder">
+                <p>THIS MESSAGE WILL SELF-DESTRUCT IN...</p>
+                <div class="countdown" aria-live="polite">
+                  <span>3</span>
+                </div>
+                <p class="error-text hidden">ERROR</p>
+                <p id="selfDestructMessage" class="self-destruct-message hidden">Agent Lama clearly didn't pay for the self-destruct feature 😂</p>
+                <p class="mission-active">MISSION ACTIVE</p>
+                <p>See you Saturday, Agent Prism ❤️</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
