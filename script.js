@@ -71,7 +71,8 @@ function init() {
     state.unlockedFiles = ["mission-file-01", "mission-file-02", "mission-file-03", "mission-file-04", "classified-surprise"];
     saveState();
   } else {
-    showScene("briefing");
+    showScene("secure-connection");
+    startSecureConnection();
   }
 }
 
@@ -406,8 +407,9 @@ function resetState() {
   elements.yesButton.style.transform = "translateX(-50%) scale(1)";
   elements.yesButton.style.setProperty("--yes-scale", "1");
   elements.decisionPanel.classList.remove("no-trapped");
-  state.currentScene = "briefing";
-  showScene("briefing");
+  state.currentScene = "secure-connection";
+  showScene("secure-connection");
+  startSecureConnection();
   saveState();
 }
 
