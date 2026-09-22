@@ -806,26 +806,26 @@ button {
 .sound-toggle,
 .reset-button {
   position: fixed;
-  top: calc(14px + var(--safe-top));
+  top: calc(12px + var(--safe-top));
   z-index: 30;
-  padding: 0.5rem 0.7rem;
+  padding: 0.48rem 0.7rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(10, 10, 10, 0.7);
+  background: rgba(10, 10, 10, 0.72);
   color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   border-radius: 999px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
 .sound-toggle {
-  right: 14px;
+  right: 12px;
 }
 
 .reset-button {
-  left: 14px;
+  left: 12px;
 }
 
 @media (min-width: 600px) {
@@ -851,7 +851,7 @@ button {
   }
 
   .app-shell {
-    padding-top: calc(12px + var(--safe-top));
+    padding-top: calc(52px + var(--safe-top));
     padding-bottom: 8px;
   }
 
@@ -861,7 +861,7 @@ button {
   }
 
   .scene {
-    padding: 0.6rem 0.55rem 0.7rem;
+    padding: 0.45rem 0.55rem 0.7rem;
   }
 
   .terminal-panel,
@@ -940,8 +940,8 @@ button {
 
   .sound-toggle,
   .reset-button {
-    font-size: 0.52rem;
-    padding: 0.45rem 0.6rem;
+    font-size: 0.48rem;
+    padding: 0.42rem 0.56rem;
   }
 }
 
