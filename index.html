@@ -13,7 +13,7 @@
         🔊 SOUND: ON
       </button>
 
-      <button id="resetButton" class="reset-button sr-only" type="button" aria-label="Reset mission state">
+      <button id="resetButton" class="reset-button" type="button" aria-label="Reset mission state">
         Reset Mission
       </button>
 
@@ -56,11 +56,7 @@
 
             <div class="briefing-grid">
               <article class="agent-card agent-lama">
-                <div class="photo-frame photo-frame-small">
-                  <div class="photo-placeholder">
-                    <span>AGENT<br />LAMA</span>
-                  </div>
-                </div>
+                <div class="avatar-shell" aria-hidden="true"></div>
                 <div class="card-copy">
                   <p class="muted-label">MISSION HANDLER</p>
                   <h3>LAMA</h3>
@@ -69,11 +65,7 @@
               </article>
 
               <article class="agent-card agent-prism">
-                <div class="photo-frame photo-frame-small">
-                  <div class="photo-placeholder">
-                    <span>AGENT<br />PRISM</span>
-                  </div>
-                </div>
+                <div class="avatar-shell" aria-hidden="true"></div>
                 <div class="card-copy">
                   <p class="muted-label">FIELD AGENT</p>
                   <h3>PRISM</h3>
@@ -174,11 +166,7 @@
               <p>✓ Have fun</p>
             </div>
             <div class="photo-card photo-mission">
-              <div class="photo-frame photo-frame-tilt">
-                <div class="photo-placeholder">
-                  <span>MISSION<br />PHOTO</span>
-                </div>
-              </div>
+              <div class="mission-visual" aria-hidden="true"></div>
             </div>
             <p class="tiny-line">THREAT LEVEL: EXTREMELY NERDY.</p>
             <button class="primary-button next-scene" data-next="mission-file-04" type="button">NEXT FILE</button>
@@ -248,19 +236,13 @@
 
             <div class="archive-grid">
               <article class="archive-card">
-                <div class="photo-frame photo-frame-small">
-                  <div class="photo-placeholder"><span>ARCHIVE<br />001</span></div>
-                </div>
+                <div class="archive-visual" aria-hidden="true"></div>
               </article>
               <article class="archive-card">
-                <div class="photo-frame photo-frame-small">
-                  <div class="photo-placeholder"><span>ARCHIVE<br />002</span></div>
-                </div>
+                <div class="archive-visual" aria-hidden="true"></div>
               </article>
               <article class="archive-card">
-                <div class="photo-frame photo-frame-small">
-                  <div class="photo-placeholder"><span>ARCHIVE<br />003</span></div>
-                </div>
+                <div class="archive-visual" aria-hidden="true"></div>
               </article>
             </div>
 
@@ -291,11 +273,7 @@
               </div>
 
               <div class="final-photo-wrap">
-                <div class="photo-frame photo-frame-final">
-                  <div class="photo-placeholder">
-                    <span>OUR<br />PHOTO</span>
-                  </div>
-                </div>
+                <div class="final-visual" aria-hidden="true"></div>
               </div>
 
               <div class="final-status">
