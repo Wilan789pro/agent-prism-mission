@@ -845,27 +845,123 @@ button {
   }
 }
 
-@media (max-width: 360px) {
-  .field-row {
-    flex-direction: column;
-    gap: 0.2rem;
+@media (max-width: 480px) {
+  body {
+    overflow: hidden;
   }
 
-  .archive-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .app-shell {
+    padding-top: calc(12px + var(--safe-top));
+    padding-bottom: 8px;
+  }
+
+  .scene-stage {
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .scene {
+    padding: 0.6rem 0.55rem 0.7rem;
+  }
+
+  .terminal-panel,
+  .dossier-shell,
+  .access-panel,
+  .file-card,
+  .timeline-shell,
+  .final-card {
+    width: min(100%, 31rem);
+  }
+
+  .dossier-shell {
+    padding: 0.8rem;
+  }
+
+  .briefing-copy {
+    font-size: 0.86rem;
+    gap: 0.42rem;
+  }
+
+  .decision-panel {
+    padding-top: 2rem;
+    padding-bottom: 3.6rem;
+    min-height: 11.6rem;
   }
 
   .decision-button {
-    min-width: 10.8rem;
+    min-width: 10.5rem;
+    padding: 0.72rem 0.9rem;
+    font-size: 0.66rem;
+  }
+
+  .file-card,
+  .timeline-shell,
+  .final-card {
+    gap: 0.7rem;
+  }
+
+  .file-grid,
+  .redacted-grid {
+    gap: 0.45rem;
+  }
+
+  .file-card h3 {
+    gap: 0.2rem;
+  }
+
+  .objective-list {
+    gap: 0.35rem;
+    font-size: 0.7rem;
+  }
+
+  .timeline-item {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .final-card {
+    padding: 0.8rem;
+  }
+
+  .final-person {
+    gap: 0.45rem;
   }
 
   .final-person h2 {
     font-size: 1.15rem;
   }
 
+  .final-message-block {
+    gap: 0.2rem;
+  }
+
+  .self-destruct-holder {
+    gap: 0.4rem;
+  }
+
   .sound-toggle,
   .reset-button {
     font-size: 0.52rem;
     padding: 0.45rem 0.6rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .field-row {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .decision-button {
+    min-width: 10.2rem;
+  }
+
+  .final-person h2 {
+    font-size: 1.1rem;
+  }
+
+  .sound-toggle,
+  .reset-button {
+    font-size: 0.5rem;
+    padding: 0.42rem 0.55rem;
   }
 }
