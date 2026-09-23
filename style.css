@@ -865,6 +865,12 @@ button {
   animation: selfDestructPulse 0.45s ease;
 }
 
+.countdown-error {
+  color: var(--red);
+  letter-spacing: 0.2em;
+  animation: selfDestructPulse 0.45s ease;
+}
+
 .self-destruct-message {
   opacity: 1;
   transition: opacity 0.35s ease;
@@ -968,6 +974,12 @@ button {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
+  }
+
+  #final-transmission {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 1rem;
   }
 
   .terminal-panel,

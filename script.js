@@ -761,9 +761,8 @@ function startSelfDestructCountdown() {
       return;
     }
 
-    countdownEl.innerHTML = "";
-    errorTextEl.textContent = "ERROR";
-    errorTextEl.classList.remove("hidden");
+    countdownEl.innerHTML = '<span class="countdown-error">ERROR</span>';
+    errorTextEl.classList.add("hidden");
     selfDestructMessageEl.classList.remove("hidden");
     selfDestructMessageEl.style.opacity = "1";
     selfDestructMessageEl.style.visibility = "visible";
