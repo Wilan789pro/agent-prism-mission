@@ -38,6 +38,13 @@ const sceneOrder = [
   "mission-timeline",
   "final-transmission"
 ];
+const missionFileIds = [
+  "mission-file-01",
+  "mission-file-02",
+  "mission-file-03",
+  "mission-file-04",
+  "classified-surprise"
+];
 
 let audioContext = null;
 let terminalSequenceTimer = null;
@@ -325,6 +332,10 @@ function acceptMission() {
 }
 
 function unlockFile(fileId) {
+  if (!missionFileIds.includes(fileId)) {
+    return;
+  }
+
   if (!state.unlockedFiles.includes(fileId)) {
     state.unlockedFiles.push(fileId);
   }
@@ -340,6 +351,10 @@ function unlockFile(fileId) {
 }
 
 function completeFile(fileId) {
+  if (!missionFileIds.includes(fileId)) {
+    return;
+  }
+
   if (!state.completedFiles.includes(fileId)) {
     state.completedFiles.push(fileId);
   }
@@ -433,8 +448,8 @@ function getMissionPayload() {
     missionAccepted: state.missionAccepted,
     noTapCount: state.noTapCount,
     currentScene: state.currentScene,
-    filesOpened: state.unlockedFiles,
-    filesCompleted: state.completedFiles,
+    filesOpened: state.unlockedFiles.filter((fileId) => missionFileIds.includes(fileId)),
+    filesCompleted: state.completedFiles.filter((fileId) => missionFileIds.includes(fileId)),
     classifiedFileOpened: state.classifiedFileOpened,
     finalTransmissionReached: state.finalTransmissionReached,
     completed: state.missionCompleted,
@@ -483,8 +498,10 @@ async function syncFromBackend() {
     state.missionStartedAt = remoteState.missionStartedAt || state.missionStartedAt;
     state.missionAccepted = Boolean(remoteState.missionAccepted || state.missionAccepted);
     state.noTapCount = Math.max(Number(remoteState.noTapCount || 0), state.noTapCount);
-    state.unlockedFiles = uniqueValues([...(remoteState.filesOpened || []), ...state.unlockedFiles]);
-    state.completedFiles = uniqueValues([...(remoteState.filesCompleted || []), ...state.completedFiles]);
+    state.unlockedFiles = uniqueValues([...(remoteState.filesOpened || []), ...state.unlockedFiles])
+      .filter((fileId) => missionFileIds.includes(fileId));
+    state.completedFiles = uniqueValues([...(remoteState.filesCompleted || []), ...state.completedFiles])
+      .filter((fileId) => missionFileIds.includes(fileId));
     state.classifiedFileOpened = Boolean(remoteState.classifiedFileOpened || state.classifiedFileOpened);
     state.finalTransmissionReached = Boolean(remoteState.finalTransmissionReached || state.finalTransmissionReached);
     state.missionCompleted = Boolean(remoteState.completed || state.missionCompleted);
@@ -509,7 +526,7 @@ function uniqueValues(values) {
 }
 
 function buildMissionReport() {
-  const filesOpened = state.unlockedFiles.length;
+  const filesOpened = state.unlockedFiles.filter((fileId) => missionFileIds.includes(fileId)).length;
   return [
     "🔒 CLASSIFIED MISSION REPORT",
     "",
@@ -541,7 +558,7 @@ function renderMissionReport() {
     <div><span>MISSION ID</span><strong>${escapeHtml(state.missionId)}</strong></div>
     <div><span>STATUS</span><strong>${state.missionAccepted ? "MISSION ACCEPTED ✓" : "PENDING"}</strong></div>
     <div><span>DECLINE ATTEMPTS</span><strong>${state.noTapCount}</strong></div>
-    <div><span>FILES UNLOCKED</span><strong>${state.unlockedFiles.length} / 5</strong></div>
+    <div><span>FILES UNLOCKED</span><strong>${state.unlockedFiles.filter((fileId) => missionFileIds.includes(fileId)).length} / 5</strong></div>
     <div><span>CLASSIFIED FILE</span><strong>${state.classifiedFileOpened ? "ACCESSED ✓" : "LOCKED"}</strong></div>
     <div><span>FINAL TRANSMISSION</span><strong>${state.finalTransmissionReached ? "REACHED ✓" : "PENDING"}</strong></div>
   `;

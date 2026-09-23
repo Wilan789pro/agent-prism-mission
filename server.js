@@ -7,6 +7,13 @@ const port = Number(process.env.PORT || 8000);
 const root = __dirname;
 const dataDirectory = path.join(root, ".mission-data");
 const dataFile = path.join(dataDirectory, "missions.json");
+const missionFileIds = new Set([
+  "mission-file-01",
+  "mission-file-02",
+  "mission-file-03",
+  "mission-file-04",
+  "classified-surprise",
+]);
 
 function readMissions() {
   try {
@@ -90,10 +97,16 @@ const server = http.createServer((request, response) => {
       try {
         const incoming = JSON.parse(body || "{}");
         const existing = missions[missionId] || { missionId, events: [] };
+        const filesOpened = [...new Set([...(incoming.filesOpened || []), ...(existing.filesOpened || [])])]
+          .filter((fileId) => missionFileIds.has(fileId));
+        const filesCompleted = [...new Set([...(incoming.filesCompleted || []), ...(existing.filesCompleted || [])])]
+          .filter((fileId) => missionFileIds.has(fileId));
         const record = {
           ...existing,
           ...incoming,
           missionId,
+          filesOpened,
+          filesCompleted,
           events: [...(existing.events || []), {
             id: crypto.randomUUID(),
             type: incoming.eventType || "STATE_UPDATED",
