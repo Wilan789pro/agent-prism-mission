@@ -722,6 +722,86 @@ button {
   color: var(--gold) !important;
 }
 
+.mission-report {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(227, 140, 125, 0.42);
+  background: rgba(227, 140, 125, 0.05);
+  text-align: center;
+}
+
+.report-kicker,
+.mission-report h3,
+.report-summary span {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.report-kicker {
+  margin: 0;
+  color: #f0b0a7;
+  font-size: 0.58rem;
+}
+
+.mission-report h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.report-summary div {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+}
+
+.report-summary span {
+  color: var(--muted-2);
+  font-size: 0.5rem;
+}
+
+.report-summary strong {
+  color: var(--text);
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+.report-button,
+.copy-report-button {
+  border: 1px solid rgba(227, 140, 125, 0.58);
+  background: rgba(227, 140, 125, 0.13);
+  color: #f4c2ba;
+  padding: 0.75rem 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  cursor: pointer;
+  font-size: 0.68rem;
+}
+
+.copy-report-button {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+}
+
+.report-feedback {
+  min-height: 1.2rem;
+  margin: 0;
+  color: var(--green) !important;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .final-photo-wrap {
   margin-top: 0.25rem;
 }
@@ -936,6 +1016,25 @@ button {
 
   .self-destruct-holder {
     gap: 0.4rem;
+  }
+
+  .mission-report {
+    gap: 0.45rem;
+    padding: 0.65rem;
+  }
+
+  .report-summary {
+    gap: 0.3rem;
+  }
+
+  .report-summary div {
+    padding: 0.35rem;
+  }
+
+  .report-button,
+  .copy-report-button {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.58rem;
   }
 
   .sound-toggle,

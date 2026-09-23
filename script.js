@@ -1,9 +1,19 @@
 const STORAGE_KEY = "agent-prism-mission-state";
+const MISSION_ID_KEY = "agent-prism-mission-id";
+const API_BASE = window.MISSION_API_BASE || "";
 const state = {
+  missionId: "",
+  missionStartedAt: "",
   missionAccepted: false,
   noTapCount: 0,
   currentScene: "secure-connection",
   unlockedFiles: [],
+  completedFiles: [],
+  classifiedFileOpened: false,
+  finalTransmissionReached: false,
+  missionCompleted: false,
+  reportGenerated: false,
+  reportShared: false,
   soundEnabled: true,
 };
 
@@ -31,6 +41,7 @@ const sceneOrder = [
 
 let audioContext = null;
 let terminalSequenceTimer = null;
+let syncTimer = null;
 
 const elements = {
   body: document.body,
@@ -48,9 +59,15 @@ const elements = {
   countdown: document.querySelector(".countdown"),
   errorText: document.querySelector(".error-text"),
   selfDestructMessage: document.getElementById("selfDestructMessage"),
+  reportSummary: document.getElementById("reportSummary"),
+  shareReportButton: document.getElementById("shareReportButton"),
+  copyReportButton: document.getElementById("copyReportButton"),
+  reportFeedback: document.getElementById("reportFeedback"),
 };
 
-function init() {
+async function init() {
+  state.missionId = getMissionId();
+  state.missionStartedAt = new Date().toISOString();
   bindEvents();
   setSoundToggleLabel();
 
@@ -63,12 +80,14 @@ function init() {
   }
 
   loadState();
+  await syncFromBackend();
+  trackEvent("MISSION_STARTED");
   applyYesScale();
   moveNoButton();
 
   if (state.missionAccepted) {
-    showScene("mission-accepted");
-    state.unlockedFiles = ["mission-file-01", "mission-file-02", "mission-file-03", "mission-file-04", "classified-surprise"];
+    const restoredScene = sceneOrder.includes(state.currentScene) ? state.currentScene : "mission-accepted";
+    showScene(restoredScene);
     saveState();
     return;
   }
@@ -96,6 +115,10 @@ function bindEvents() {
     button.addEventListener("click", () => {
       const nextScene = button.dataset.next;
       if (nextScene) {
+        const currentScene = button.closest(".scene")?.id;
+        if (currentScene && currentScene.startsWith("mission-file-")) {
+          completeFile(currentScene);
+        }
         showScene(nextScene);
         unlockFile(nextScene);
         playTone("transition");
@@ -124,6 +147,9 @@ function bindEvents() {
   });
 
   elements.resetButton.addEventListener("click", resetState);
+
+  elements.shareReportButton.addEventListener("click", shareMissionReport);
+  elements.copyReportButton.addEventListener("click", copyMissionReport);
 
   document.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() === "r") {
@@ -187,6 +213,11 @@ function showScene(sceneName) {
   });
 
   if (sceneName === "final-transmission") {
+    state.finalTransmissionReached = true;
+    state.missionCompleted = true;
+    state.reportGenerated = true;
+    trackEvent("FINAL_TRANSMISSION_REACHED");
+    renderMissionReport();
     startSelfDestructCountdown();
   } else {
     stopSelfDestructCountdown();
@@ -203,6 +234,7 @@ function handleNoButton(event) {
 
   event.preventDefault();
   state.noTapCount += 1;
+  trackEvent("NO_TAPPED");
   updateDecisionMessage();
   growYesButton();
   moveNoButton();
@@ -283,7 +315,7 @@ function triggerNoCapture() {
 
 function acceptMission() {
   state.missionAccepted = true;
-  state.unlockedFiles = ["mission-file-01", "mission-file-02", "mission-file-03", "mission-file-04", "classified-surprise"];
+  trackEvent("MISSION_ACCEPTED");
   saveState();
   document.body.classList.add("mission-active");
   playTone("accept");
@@ -296,7 +328,22 @@ function unlockFile(fileId) {
   if (!state.unlockedFiles.includes(fileId)) {
     state.unlockedFiles.push(fileId);
   }
+  if (!state.completedFiles.includes(fileId)) {
+    state.completedFiles.push(fileId);
+  }
+  if (fileId === "classified-surprise") {
+    state.classifiedFileOpened = true;
+    trackEvent("CLASSIFIED_FILE_OPENED");
+  }
+  trackEvent("FILE_OPENED");
   saveState();
+}
+
+function completeFile(fileId) {
+  if (!state.completedFiles.includes(fileId)) {
+    state.completedFiles.push(fileId);
+  }
+  trackEvent("FILE_COMPLETED");
 }
 
 function playTone(type) {
@@ -359,16 +406,231 @@ function setSoundToggleLabel() {
   elements.soundToggle.textContent = state.soundEnabled ? "🔊 SOUND: ON" : "🔇 SOUND: OFF";
 }
 
+function getMissionId() {
+  const existingId = localStorage.getItem(MISSION_ID_KEY);
+  if (existingId) {
+    return existingId;
+  }
+
+  const randomBytes = new Uint8Array(4);
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(randomBytes);
+  } else {
+    for (let index = 0; index < randomBytes.length; index += 1) {
+      randomBytes[index] = Math.floor(Math.random() * 256);
+    }
+  }
+
+  const missionId = `AP-${Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("").toUpperCase()}`;
+  localStorage.setItem(MISSION_ID_KEY, missionId);
+  return missionId;
+}
+
+function getMissionPayload() {
+  return {
+    missionId: state.missionId,
+    missionStartedAt: state.missionStartedAt,
+    missionAccepted: state.missionAccepted,
+    noTapCount: state.noTapCount,
+    currentScene: state.currentScene,
+    filesOpened: state.unlockedFiles,
+    filesCompleted: state.completedFiles,
+    classifiedFileOpened: state.classifiedFileOpened,
+    finalTransmissionReached: state.finalTransmissionReached,
+    completed: state.missionCompleted,
+    reportGenerated: state.reportGenerated,
+    reportShared: state.reportShared,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function syncMissionState(eventType = "STATE_UPDATED") {
+  if (!API_BASE || !state.missionId) {
+    return;
+  }
+
+  const payload = { ...getMissionPayload(), eventType };
+  window.clearTimeout(syncTimer);
+  syncTimer = window.setTimeout(() => {
+    fetch(`${API_BASE}/api/missions/${encodeURIComponent(state.missionId)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {
+      // Local state remains authoritative until the next background retry.
+    });
+  }, 120);
+}
+
+function trackEvent(eventType) {
+  saveState();
+  syncMissionState(eventType);
+}
+
+async function syncFromBackend() {
+  if (!API_BASE || !state.missionId) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/api/missions/${encodeURIComponent(state.missionId)}`);
+    if (!response.ok) {
+      return;
+    }
+
+    const remoteState = await response.json();
+    state.missionStartedAt = remoteState.missionStartedAt || state.missionStartedAt;
+    state.missionAccepted = Boolean(remoteState.missionAccepted || state.missionAccepted);
+    state.noTapCount = Math.max(Number(remoteState.noTapCount || 0), state.noTapCount);
+    state.unlockedFiles = uniqueValues([...(remoteState.filesOpened || []), ...state.unlockedFiles]);
+    state.completedFiles = uniqueValues([...(remoteState.filesCompleted || []), ...state.completedFiles]);
+    state.classifiedFileOpened = Boolean(remoteState.classifiedFileOpened || state.classifiedFileOpened);
+    state.finalTransmissionReached = Boolean(remoteState.finalTransmissionReached || state.finalTransmissionReached);
+    state.missionCompleted = Boolean(remoteState.completed || state.missionCompleted);
+    state.reportGenerated = Boolean(remoteState.reportGenerated || state.reportGenerated);
+    state.reportShared = Boolean(remoteState.reportShared || state.reportShared);
+    if (remoteState.currentScene && sceneOrder.includes(remoteState.currentScene)) {
+      state.currentScene = remoteState.currentScene;
+    }
+    saveState();
+    applyYesScale();
+    moveNoButton();
+    if (state.reportGenerated) {
+      renderMissionReport();
+    }
+  } catch (error) {
+    // The mission continues offline and will sync on the next event.
+  }
+}
+
+function uniqueValues(values) {
+  return [...new Set(values)];
+}
+
+function buildMissionReport() {
+  const filesOpened = state.unlockedFiles.length;
+  return [
+    "🔒 CLASSIFIED MISSION REPORT",
+    "",
+    "AGENT: PRISM",
+    `MISSION ID: ${state.missionId}`,
+    "",
+    `STATUS: ${state.missionAccepted ? "MISSION ACCEPTED" : "PENDING ACCEPTANCE"}`,
+    "",
+    `DECLINE ATTEMPTS: ${state.noTapCount}`,
+    "",
+    `FILES UNLOCKED: ${filesOpened}/5`,
+    "",
+    `CLASSIFIED FILE: ${state.classifiedFileOpened ? "ACCESSED ✓" : "NOT ACCESSED"}`,
+    "",
+    `FINAL TRANSMISSION: ${state.finalTransmissionReached ? "REACHED ✓" : "NOT REACHED"}`,
+    "",
+    `MISSION STATUS: ${state.missionCompleted ? "ACTIVE ❤️" : "IN PROGRESS"}`,
+    "",
+    "— Agent Prism",
+  ].join("\n");
+}
+
+function renderMissionReport() {
+  if (!elements.reportSummary) {
+    return;
+  }
+
+  elements.reportSummary.innerHTML = `
+    <div><span>MISSION ID</span><strong>${escapeHtml(state.missionId)}</strong></div>
+    <div><span>STATUS</span><strong>${state.missionAccepted ? "MISSION ACCEPTED ✓" : "PENDING"}</strong></div>
+    <div><span>DECLINE ATTEMPTS</span><strong>${state.noTapCount}</strong></div>
+    <div><span>FILES UNLOCKED</span><strong>${state.unlockedFiles.length} / 5</strong></div>
+    <div><span>CLASSIFIED FILE</span><strong>${state.classifiedFileOpened ? "ACCESSED ✓" : "LOCKED"}</strong></div>
+    <div><span>FINAL TRANSMISSION</span><strong>${state.finalTransmissionReached ? "REACHED ✓" : "PENDING"}</strong></div>
+  `;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;",
+  }[character]));
+}
+
+async function shareMissionReport() {
+  const reportText = buildMissionReport();
+  state.reportGenerated = true;
+  saveState();
+
+  if (!navigator.share) {
+    await copyMissionReport();
+    return;
+  }
+
+  try {
+    await navigator.share({
+      title: "Agent Prism - Mission Report",
+      text: reportText,
+    });
+    state.reportShared = true;
+    saveState();
+    trackEvent("REPORT_SHARED");
+    showReportFeedback("REPORT TRANSMITTED ✓");
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      showReportFeedback("TRANSMISSION READY");
+    }
+  }
+}
+
+async function copyMissionReport() {
+  const reportText = buildMissionReport();
+  state.reportGenerated = true;
+
+  try {
+    await navigator.clipboard.writeText(reportText);
+  } catch (error) {
+    const textArea = document.createElement("textarea");
+    textArea.value = reportText;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+  }
+
+  saveState();
+  trackEvent("REPORT_GENERATED");
+  showReportFeedback("MISSION REPORT COPIED");
+}
+
+function showReportFeedback(message) {
+  if (elements.reportFeedback) {
+    elements.reportFeedback.textContent = message;
+  }
+}
+
 function saveState() {
   const payload = {
+    missionId: state.missionId,
+    missionStartedAt: state.missionStartedAt,
     missionAccepted: state.missionAccepted,
     noTapCount: state.noTapCount,
     currentScene: state.currentScene,
     unlockedFiles: state.unlockedFiles,
+    completedFiles: state.completedFiles,
+    classifiedFileOpened: state.classifiedFileOpened,
+    finalTransmissionReached: state.finalTransmissionReached,
+    missionCompleted: state.missionCompleted,
+    reportGenerated: state.reportGenerated,
+    reportShared: state.reportShared,
     soundEnabled: state.soundEnabled,
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  syncMissionState();
 }
 
 function loadState() {
@@ -379,10 +641,18 @@ function loadState() {
     }
 
     const saved = JSON.parse(raw);
+    state.missionId = saved.missionId || state.missionId;
+    state.missionStartedAt = saved.missionStartedAt || state.missionStartedAt;
     state.missionAccepted = Boolean(saved.missionAccepted);
     state.noTapCount = Number(saved.noTapCount || 0);
     state.currentScene = saved.currentScene || state.currentScene;
     state.unlockedFiles = Array.isArray(saved.unlockedFiles) ? saved.unlockedFiles : [];
+    state.completedFiles = Array.isArray(saved.completedFiles) ? saved.completedFiles : [];
+    state.classifiedFileOpened = Boolean(saved.classifiedFileOpened);
+    state.finalTransmissionReached = Boolean(saved.finalTransmissionReached);
+    state.missionCompleted = Boolean(saved.missionCompleted);
+    state.reportGenerated = Boolean(saved.reportGenerated);
+    state.reportShared = Boolean(saved.reportShared);
     state.soundEnabled = saved.soundEnabled !== false;
   } catch (error) {
     console.warn("Mission state could not be restored.", error);
@@ -395,6 +665,12 @@ function resetState() {
   state.noTapCount = 0;
   state.currentScene = "secure-connection";
   state.unlockedFiles = [];
+  state.completedFiles = [];
+  state.classifiedFileOpened = false;
+  state.finalTransmissionReached = false;
+  state.missionCompleted = false;
+  state.reportGenerated = false;
+  state.reportShared = false;
   state.soundEnabled = true;
   setSoundToggleLabel();
   elements.enterButton.classList.add("hidden");
