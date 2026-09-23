@@ -835,8 +835,7 @@ button {
 .self-destruct-holder.is-visible {
   position: fixed;
   z-index: 50;
-  left: 50%;
-  top: 50%;
+  inset: 50% auto auto 50%;
   width: min(calc(100vw - 2rem), 28rem);
   max-height: calc(100dvh - 2rem);
   overflow: auto;

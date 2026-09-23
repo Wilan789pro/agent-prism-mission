@@ -77,6 +77,9 @@ const elements = {
 async function init() {
   state.missionId = getMissionId();
   state.missionStartedAt = new Date().toISOString();
+  if (elements.selfDestructHolder) {
+    document.body.appendChild(elements.selfDestructHolder);
+  }
   bindEvents();
   setSoundToggleLabel();
 
