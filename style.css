@@ -947,7 +947,8 @@ button {
 
 @media (max-width: 480px) {
   body {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .app-shell {
@@ -964,6 +965,9 @@ button {
 
   .scene {
     padding: 0.7rem 0.65rem 0.8rem;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .terminal-panel,
