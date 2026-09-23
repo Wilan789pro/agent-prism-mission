@@ -828,6 +828,26 @@ button {
   padding-right: 0.2rem;
 }
 
+.self-destruct-holder.report-locked {
+  display: none;
+}
+
+.self-destruct-holder.is-visible {
+  position: fixed;
+  z-index: 50;
+  left: 50%;
+  top: 50%;
+  width: min(calc(100vw - 2rem), 28rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(227, 140, 125, 0.62);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0.98), rgba(8, 8, 8, 0.99));
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.72), 0 0 0 100vmax rgba(0, 0, 0, 0.64);
+  padding: 1.2rem;
+}
+
 .countdown {
   display: flex;
   justify-content: center;
@@ -936,12 +956,14 @@ button {
   }
 
   .scene-stage {
+    height: calc(100dvh - 60px);
     max-height: 100dvh;
+    min-height: 0;
     overflow: hidden;
   }
 
   .scene {
-    padding: 0.45rem 0.55rem 0.7rem;
+    padding: 0.7rem 0.65rem 0.8rem;
   }
 
   .terminal-panel,
@@ -1016,6 +1038,12 @@ button {
 
   .self-destruct-holder {
     gap: 0.4rem;
+  }
+
+  .self-destruct-holder.is-visible {
+    width: min(calc(100vw - 1.25rem), 28rem);
+    max-height: calc(100dvh - 1.25rem);
+    padding: 1rem;
   }
 
   .mission-report {

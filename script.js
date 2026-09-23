@@ -14,6 +14,7 @@ const state = {
   missionCompleted: false,
   reportGenerated: false,
   reportShared: false,
+  reportActionCompleted: false,
   soundEnabled: true,
 };
 
@@ -70,6 +71,7 @@ const elements = {
   shareReportButton: document.getElementById("shareReportButton"),
   copyReportButton: document.getElementById("copyReportButton"),
   reportFeedback: document.getElementById("reportFeedback"),
+  selfDestructHolder: document.querySelector(".self-destruct-holder"),
 };
 
 async function init() {
@@ -225,6 +227,9 @@ function showScene(sceneName) {
     state.reportGenerated = true;
     trackEvent("FINAL_TRANSMISSION_REACHED");
     renderMissionReport();
+    if (state.reportActionCompleted) {
+      releaseSelfDestruct();
+    }
     startSelfDestructCountdown();
   } else {
     stopSelfDestructCountdown();
@@ -455,6 +460,7 @@ function getMissionPayload() {
     completed: state.missionCompleted,
     reportGenerated: state.reportGenerated,
     reportShared: state.reportShared,
+    reportActionCompleted: state.reportActionCompleted,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -507,6 +513,7 @@ async function syncFromBackend() {
     state.missionCompleted = Boolean(remoteState.completed || state.missionCompleted);
     state.reportGenerated = Boolean(remoteState.reportGenerated || state.reportGenerated);
     state.reportShared = Boolean(remoteState.reportShared || state.reportShared);
+    state.reportActionCompleted = Boolean(remoteState.reportActionCompleted || state.reportActionCompleted);
     if (remoteState.currentScene && sceneOrder.includes(remoteState.currentScene)) {
       state.currentScene = remoteState.currentScene;
     }
@@ -590,6 +597,7 @@ async function shareMissionReport() {
       text: reportText,
     });
     state.reportShared = true;
+    releaseSelfDestruct();
     saveState();
     trackEvent("REPORT_SHARED");
     showReportFeedback("REPORT TRANSMITTED ✓");
@@ -619,6 +627,7 @@ async function copyMissionReport() {
   }
 
   saveState();
+  releaseSelfDestruct();
   trackEvent("REPORT_GENERATED");
   showReportFeedback("MISSION REPORT COPIED");
 }
@@ -627,6 +636,16 @@ function showReportFeedback(message) {
   if (elements.reportFeedback) {
     elements.reportFeedback.textContent = message;
   }
+}
+
+function releaseSelfDestruct() {
+  state.reportActionCompleted = true;
+  if (elements.selfDestructHolder) {
+    elements.selfDestructHolder.classList.remove("report-locked");
+    elements.selfDestructHolder.classList.add("is-visible");
+  }
+  startSelfDestructCountdown();
+  saveState();
 }
 
 function saveState() {
@@ -643,6 +662,7 @@ function saveState() {
     missionCompleted: state.missionCompleted,
     reportGenerated: state.reportGenerated,
     reportShared: state.reportShared,
+    reportActionCompleted: state.reportActionCompleted,
     soundEnabled: state.soundEnabled,
   };
 
@@ -670,6 +690,7 @@ function loadState() {
     state.missionCompleted = Boolean(saved.missionCompleted);
     state.reportGenerated = Boolean(saved.reportGenerated);
     state.reportShared = Boolean(saved.reportShared);
+    state.reportActionCompleted = Boolean(saved.reportActionCompleted);
     state.soundEnabled = saved.soundEnabled !== false;
   } catch (error) {
     console.warn("Mission state could not be restored.", error);
@@ -688,6 +709,7 @@ function resetState() {
   state.missionCompleted = false;
   state.reportGenerated = false;
   state.reportShared = false;
+  state.reportActionCompleted = false;
   state.soundEnabled = true;
   setSoundToggleLabel();
   elements.enterButton.classList.add("hidden");
@@ -719,6 +741,7 @@ function startSelfDestructCountdown() {
   const selfDestructMessageEl = elements.selfDestructMessage;
 
   if (!countdownEl || !errorTextEl || !selfDestructMessageEl) return;
+  if (!state.reportActionCompleted) return;
 
   stopSelfDestructCountdown();
   selfDestructMessageEl.classList.add("hidden");
